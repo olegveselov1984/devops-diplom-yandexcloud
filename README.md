@@ -100,14 +100,55 @@ commands will detect it and remind you to do so if necessary.
 Способ подготовки:
 
 1. Рекомендуемый вариант:  
-   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.  
+   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
+
+<img width="834" height="316" alt="image" src="https://github.com/user-attachments/assets/73e16ac5-a7e0-45dd-aec3-4ada122d4b46" />
+```
+events {
+  worker_connections  1024;
+}
+
+http {
+
+ server {
+  listen   80;
+   server_name  localhost;
+
+    location / {
+      root   /var/www/html;
+      index  index.html index.htm;
+    }
+
+    charset koi8-r;
+
+    error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+      root   /var/www/html;
+    }
+  }
+}
+```
+
    б. Подготовьте Dockerfile для создания образа приложения.  
-2. Альтернативный вариант:  
-   а. Используйте любой другой код, главное, чтобы был самостоятельно создан Dockerfile.
+```
+FROM nginx:1.21.6-alpine
+
+# Configuration
+ADD conf /etc/nginx
+# Content
+ADD content /var/www/html/
+
+RUN chown -R nginx:nginx /var/www &&\
+    chmod -R 644 /var/www/html/*
+```
 
 Ожидаемый результат:
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
+
+<img width="711" height="406" alt="image" src="https://github.com/user-attachments/assets/bbf8128d-1775-4ed7-8de2-7ad4ccc1468a" />
+
+
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
 ---
