@@ -1,16 +1,4 @@
 # Дипломный практикум в Yandex.Cloud
-  * [Цели:](#цели)
-  * [Этапы выполнения:](#этапы-выполнения)
-     * [Создание облачной инфраструктуры](#создание-облачной-инфраструктуры)
-     * [Создание Kubernetes кластера](#создание-kubernetes-кластера)
-     * [Создание тестового приложения](#создание-тестового-приложения)
-     * [Подготовка cистемы мониторинга и деплой приложения](#подготовка-cистемы-мониторинга-и-деплой-приложения)
-     * [Установка и настройка CI/CD](#установка-и-настройка-cicd)
-  * [Что необходимо для сдачи задания?](#что-необходимо-для-сдачи-задания)
-  * [Как правильно задавать вопросы дипломному руководителю?](#как-правильно-задавать-вопросы-дипломному-руководителю)
-
-**Перед началом работы над дипломным заданием изучите [Инструкция по экономии облачных ресурсов](https://github.com/netology-code/devops-materials/blob/master/cloudwork.MD).**
-
 ---
 ## Цели:
 
@@ -29,21 +17,51 @@
 
 Для начала необходимо подготовить облачную инфраструктуру в ЯО при помощи [Terraform](https://www.terraform.io/).
 
-Особенности выполнения:
+<img width="1487" height="1030" alt="image" src="https://github.com/user-attachments/assets/82189a64-18fa-45e0-843c-e169ba51e95d" />
 
-- Бюджет купона ограничен, что следует иметь в виду при проектировании инфраструктуры и использовании ресурсов;
-Для облачного k8s используйте региональный мастер(неотказоустойчивый). Для self-hosted k8s минимизируйте ресурсы ВМ и долю ЦПУ. В обоих вариантах используйте прерываемые ВМ для worker nodes.
+Особенности выполнения:
 
 Предварительная подготовка к установке и запуску Kubernetes кластера.
 
 1. Создайте сервисный аккаунт, который будет в дальнейшем использоваться Terraform для работы с инфраструктурой с необходимыми и достаточными правами. Не стоит использовать права суперпользователя
+
+<img width="1002" height="363" alt="image" src="https://github.com/user-attachments/assets/216a54da-53d9-476b-8357-21ee587a2881" />
+
 2. Подготовьте [backend](https://developer.hashicorp.com/terraform/language/backend) для Terraform:  
-   а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)
-   б. Альтернативный вариант:  [Terraform Cloud](https://app.terraform.io/)
+   а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)  
+
 3. Создайте конфигурацию Terrafrom, используя созданный бакет ранее как бекенд для хранения стейт файла. Конфигурации Terraform для создания сервисного аккаунта и бакета и основной инфраструктуры следует сохранить в разных папках.
+
+<img width="1146" height="466" alt="image" src="https://github.com/user-attachments/assets/239e0854-391c-4680-8f5d-f4c41a3a5502" />
+
 4. Создайте VPC с подсетями в разных зонах доступности.
+
+<img width="2095" height="827" alt="image" src="https://github.com/user-attachments/assets/40c488ed-68a8-4fba-a4a6-2f201b971db4" />
+
 5. Убедитесь, что теперь вы можете выполнить команды `terraform destroy` и `terraform apply` без дополнительных ручных действий.
-6. В случае использования [Terraform Cloud](https://app.terraform.io/) в качестве [backend](https://developer.hashicorp.com/terraform/language/backend) убедитесь, что применение изменений успешно проходит, используя web-интерфейс Terraform cloud.
+```
+/devops-diplom-yandexcloud/terraform$ terraform init
+Initializing the backend...
+Initializing modules...
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Reusing previous version of hashicorp/template from the dependency lock file
+- Using previously-installed yandex-cloud/yandex v0.177.0
+- Using previously-installed hashicorp/template v2.2.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+```
+
+<img width="1143" height="580" alt="image" src="https://github.com/user-attachments/assets/5d5a2fda-4e14-47ca-a49f-b5d095b20677" />
+
 
 Ожидаемые результаты:
 
@@ -55,7 +73,7 @@
 
 На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
 
-Это можно сделать двумя способами:
+Это можно сделать двумя способами (Выбрал второй вариант):
 
 1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
    а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
@@ -71,6 +89,9 @@
 2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
+<img width="970" height="552" alt="image" src="https://github.com/user-attachments/assets/50719172-7cdb-4b29-832d-bc6807f6d42d" />
+
+
 ---
 ### Создание тестового приложения
 
@@ -79,14 +100,58 @@
 Способ подготовки:
 
 1. Рекомендуемый вариант:  
-   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.  
+   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
+   https://github.com/olegveselov1984/devops-diplom-yandexcloud-nginx-.git
+
+<img width="834" height="316" alt="image" src="https://github.com/user-attachments/assets/73e16ac5-a7e0-45dd-aec3-4ada122d4b46" />
+
+```
+events {
+  worker_connections  1024;
+}
+
+http {
+
+ server {
+  listen   80;
+   server_name  localhost;
+
+    location / {
+      root   /var/www/html;
+      index  index.html index.htm;
+    }
+
+    charset koi8-r;
+
+    error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+      root   /var/www/html;
+    }
+  }
+}
+```
+
    б. Подготовьте Dockerfile для создания образа приложения.  
-2. Альтернативный вариант:  
-   а. Используйте любой другой код, главное, чтобы был самостоятельно создан Dockerfile.
+   
+```
+FROM nginx:1.21.6-alpine
+
+# Configuration
+ADD conf /etc/nginx
+# Content
+ADD content /var/www/html/
+
+RUN chown -R nginx:nginx /var/www &&\
+    chmod -R 644 /var/www/html/*
+```
 
 Ожидаемый результат:
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
+
+<img width="711" height="406" alt="image" src="https://github.com/user-attachments/assets/bbf8128d-1775-4ed7-8de2-7ad4ccc1468a" />
+
+
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
 ---
