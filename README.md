@@ -312,6 +312,71 @@ go install github.com/google/go-jsonnet/cmd/jsonnet@latest
 В результате в папке manifests получаем набор манифестов для разворачивания системы мониторинга. Для их применения используется утилита kubectl. Её вызов производится в два этапа.
 
 
+Перейдем в папку kube-prometheus и создадим пространства имен и CRD (Custom Resource Definition - специальный ресурс в Kubernetes, позволяющий вносить любые данные):
+```
+/devops-diplom-yandexcloud/prometheus$ kubectl apply --server-side -f manifests/setup
+namespace/monitoring serverside-applied
+customresourcedefinition.apiextensions.k8s.io/alertmanagerconfigs.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/alertmanagers.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/podmonitors.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/probes.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/prometheuses.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/prometheusagents.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/scrapeconfigs.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/servicemonitors.monitoring.coreos.com serverside-applied
+customresourcedefinition.apiextensions.k8s.io/thanosrulers.monitoring.coreos.com serverside-applied
+clusterrole.rbac.authorization.k8s.io/prometheus-operator serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-operator serverside-applied
+deployment.apps/prometheus-operator serverside-applied
+networkpolicy.networking.k8s.io/prometheus-operator serverside-applied
+service/prometheus-operator serverside-applied
+serviceaccount/prometheus-operator serverside-applied
+```
+
+Дождёмся запуска всех ресурсов и запустим ресурсы, непосредственно реализующие систему мониторинга:
+```
+kubectl apply -f manifests
+```
+```
+/devops-diplom-yandexcloud/prometheus$ kubectl --namespace monitoring get pods
+NAME                                  READY   STATUS    RESTARTS   AGE
+alertmanager-main-0                   2/2     Running   0          2m59s
+alertmanager-main-1                   2/2     Running   0          2m59s
+alertmanager-main-2                   2/2     Running   0          2m59s
+blackbox-exporter-7b74d9db8f-sp8vv    3/3     Running   0          2m58s
+grafana-6bf975c4df-pp7xv              1/1     Running   0          2m52s
+kube-state-metrics-54d45f4b4c-pr8h7   3/3     Running   0          2m51s
+node-exporter-4tr6k                   2/2     Running   0          2m49s
+node-exporter-7qbwh                   2/2     Running   0          2m49s
+node-exporter-hzjfx                   2/2     Running   0          70s
+node-exporter-q7t95                   2/2     Running   0          2m49s
+node-exporter-qzpk9                   2/2     Running   0          70s
+prometheus-adapter-599c88b6c4-fvx8q   1/1     Running   0          2m47s
+prometheus-adapter-599c88b6c4-tffrz   1/1     Running   0          2m47s
+prometheus-k8s-0                      2/2     Running   0          2m45s
+prometheus-k8s-1                      2/2     Running   0          2m45s
+prometheus-operator-cfcd59856-f8fzl   2/2     Running   0          4m27s
+```
+
+Доступ к развернутым в кластере приложениям мониторинга настроим через проброс портов.
+
+Когда все ресурсы запустились, можно выполнить проброску портов кластера в локальное окружение с помощью команды kubectl port-forward:
+```
+kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
+```
+<img width="564" height="466" alt="image" src="https://github.com/user-attachments/assets/54cff2a2-20e8-4132-b34b-d3a2b9425a28" />
+```
+kubectl --namespace monitoring port-forward svc/grafana 3000
+```
+<img width="574" height="670" alt="image" src="https://github.com/user-attachments/assets/1c6f6bd1-bc52-4956-8f24-f5ad296b1757" />
+
+```
+kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
+```
+<img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
+
+
 
 ### Деплой инфраструктуры в terraform pipeline
 
