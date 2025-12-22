@@ -268,19 +268,48 @@ sudo snap install go --classic
 go version go1.25.5 linux/amd64
 ```
 
+Для удобства путь к исполняемым файлам Golang следует указать в PATH:
+```
+export PATH=$PATH:$HOME/go/bin
+```
+Далее следует установить инструмент jsonnet-bundler:
+```
+go install -a github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
+```
 
+Далее переходим в папку prometheus, инициализуем в ней "jsonnet-bundler" и устанавливаем необходимые для "kube-prometheus" зависимости:
+```
+jb init
+jb install github.com/prometheus-operator/kube-prometheus/jsonnet/kube-prometheus@main
+```
+Далее скачиваем файл example.jsonnet используемый в качестве образца файла конфигурирования:
+```
+ wget https://raw.githubusercontent.com/prometheus-operator/kube-prometheus/main/example.jsonnet -O example.jsonnet
+```
+А также скачиваем скрипт, используемый для сборки:
+```
+wget https://raw.githubusercontent.com/prometheus-operator/kube-prometheus/main/build.sh -O build.sh
+```
+Полученный файл build.sh помечаем как исполняемый:
+```
+chmod u+x build.sh
+```
+Далее обновляем зависимости для "kube-prometheus":
+```
+jb update   
+```
+Перед компиляцией следует дополнительно установить инструменты "gojsontoyaml" и "jsonnet":
+```
+go install github.com/brancz/gojsontoyaml@latest
+go install github.com/google/go-jsonnet/cmd/jsonnet@latest
 
+```
 
-
-
-
-
-
-
-
-
-
-
+Создаём копию файла example.jsonnet под именем monitoring.jsonnet и указываем в нем настройки инструментов мониторинга, установка которых предполагается в кластер Kubenetes. После этого запускаем скрипт генерации манифестов:
+```
+./build.sh monitoring.jsonnet
+```
+В результате в папке manifests получаем набор манифестов для разворачивания системы мониторинга. Для их применения используется утилита kubectl. Её вызов производится в два этапа.
 
 
 
