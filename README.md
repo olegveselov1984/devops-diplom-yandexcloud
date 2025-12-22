@@ -103,6 +103,7 @@ commands will detect it and remind you to do so if necessary.
    а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
 
 <img width="834" height="316" alt="image" src="https://github.com/user-attachments/assets/73e16ac5-a7e0-45dd-aec3-4ada122d4b46" />
+
 ```
 events {
   worker_connections  1024;
@@ -130,6 +131,7 @@ http {
 ```
 
    б. Подготовьте Dockerfile для создания образа приложения.  
+   
 ```
 FROM nginx:1.21.6-alpine
 
