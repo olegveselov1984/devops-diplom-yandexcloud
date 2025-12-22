@@ -17,7 +17,8 @@
 
 Для начала необходимо подготовить облачную инфраструктуру в ЯО при помощи [Terraform](https://www.terraform.io/).
 
-<img width="1126" height="808" alt="image" src="https://github.com/user-attachments/assets/6d8bb86b-78dc-4030-8719-60bfda3b821f" />
+<img width="1487" height="1030" alt="image" src="https://github.com/user-attachments/assets/82189a64-18fa-45e0-843c-e169ba51e95d" />
+
 
 
 Особенности выполнения:
@@ -30,11 +31,45 @@
 
 
 2. Подготовьте [backend](https://developer.hashicorp.com/terraform/language/backend) для Terraform:  
-   а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)
+   а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)  
    б. Альтернативный вариант:  [Terraform Cloud](https://app.terraform.io/)
 3. Создайте конфигурацию Terrafrom, используя созданный бакет ранее как бекенд для хранения стейт файла. Конфигурации Terraform для создания сервисного аккаунта и бакета и основной инфраструктуры следует сохранить в разных папках.
+
+<img width="1148" height="344" alt="image" src="https://github.com/user-attachments/assets/daa96e1f-fd36-4b35-b60d-a67c4d194175" />
+
+
 4. Создайте VPC с подсетями в разных зонах доступности.
+
+<img width="2095" height="827" alt="image" src="https://github.com/user-attachments/assets/40c488ed-68a8-4fba-a4a6-2f201b971db4" />
+
+
 5. Убедитесь, что теперь вы можете выполнить команды `terraform destroy` и `terraform apply` без дополнительных ручных действий.
+```
+/devops-diplom-yandexcloud/terraform$ terraform init
+Initializing the backend...
+Initializing modules...
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Reusing previous version of hashicorp/template from the dependency lock file
+- Using previously-installed yandex-cloud/yandex v0.177.0
+- Using previously-installed hashicorp/template v2.2.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+```
+
+<img width="1143" height="580" alt="image" src="https://github.com/user-attachments/assets/5d5a2fda-4e14-47ca-a49f-b5d095b20677" />
+
+
+
+
 6. В случае использования [Terraform Cloud](https://app.terraform.io/) в качестве [backend](https://developer.hashicorp.com/terraform/language/backend) убедитесь, что применение изменений успешно проходит, используя web-интерфейс Terraform cloud.
 
 Ожидаемые результаты:
@@ -62,6 +97,9 @@
 1. Работоспособный Kubernetes кластер.
 2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
+
+<img width="970" height="552" alt="image" src="https://github.com/user-attachments/assets/50719172-7cdb-4b29-832d-bc6807f6d42d" />
+
 
 ---
 ### Создание тестового приложения
