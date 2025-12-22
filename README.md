@@ -101,6 +101,7 @@ commands will detect it and remind you to do so if necessary.
 
 1. Рекомендуемый вариант:  
    а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
+   https://github.com/olegveselov1984/devops-diplom-yandexcloud-nginx-.git
 
 <img width="834" height="316" alt="image" src="https://github.com/user-attachments/assets/73e16ac5-a7e0-45dd-aec3-4ada122d4b46" />
 
