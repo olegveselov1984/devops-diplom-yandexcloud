@@ -19,8 +19,6 @@
 
 <img width="1487" height="1030" alt="image" src="https://github.com/user-attachments/assets/82189a64-18fa-45e0-843c-e169ba51e95d" />
 
-
-
 Особенности выполнения:
 
 Предварительная подготовка к установке и запуску Kubernetes кластера.
@@ -29,19 +27,16 @@
 
 <img width="1002" height="363" alt="image" src="https://github.com/user-attachments/assets/216a54da-53d9-476b-8357-21ee587a2881" />
 
-
 2. Подготовьте [backend](https://developer.hashicorp.com/terraform/language/backend) для Terraform:  
    а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)  
-   б. Альтернативный вариант:  [Terraform Cloud](https://app.terraform.io/)
+
 3. Создайте конфигурацию Terrafrom, используя созданный бакет ранее как бекенд для хранения стейт файла. Конфигурации Terraform для создания сервисного аккаунта и бакета и основной инфраструктуры следует сохранить в разных папках.
 
-<img width="1148" height="344" alt="image" src="https://github.com/user-attachments/assets/daa96e1f-fd36-4b35-b60d-a67c4d194175" />
-
+<img width="1146" height="466" alt="image" src="https://github.com/user-attachments/assets/239e0854-391c-4680-8f5d-f4c41a3a5502" />
 
 4. Создайте VPC с подсетями в разных зонах доступности.
 
 <img width="2095" height="827" alt="image" src="https://github.com/user-attachments/assets/40c488ed-68a8-4fba-a4a6-2f201b971db4" />
-
 
 5. Убедитесь, что теперь вы можете выполнить команды `terraform destroy` и `terraform apply` без дополнительных ручных действий.
 ```
@@ -68,10 +63,6 @@ commands will detect it and remind you to do so if necessary.
 <img width="1143" height="580" alt="image" src="https://github.com/user-attachments/assets/5d5a2fda-4e14-47ca-a49f-b5d095b20677" />
 
 
-
-
-6. В случае использования [Terraform Cloud](https://app.terraform.io/) в качестве [backend](https://developer.hashicorp.com/terraform/language/backend) убедитесь, что применение изменений успешно проходит, используя web-интерфейс Terraform cloud.
-
 Ожидаемые результаты:
 
 1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий, стейт основной конфигурации сохраняется в бакете или Terraform Cloud
@@ -82,7 +73,7 @@ commands will detect it and remind you to do so if necessary.
 
 На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
 
-Это можно сделать двумя способами:
+Это можно сделать двумя способами (Выбрал второй вариант):
 
 1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
    а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
