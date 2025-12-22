@@ -23,7 +23,7 @@
 
 Предварительная подготовка к установке и запуску Kubernetes кластера.
 
-1. Создайте сервисный аккаунт, который будет в дальнейшем использоваться Terraform для работы с инфраструктурой с необходимыми и достаточными правами. Не стоит использовать права суперпользователя
+1. Создайте сервисный аккаунт, который будет в дальнейшем использоваться Terraform для работы с инфраструктурой с необходимыми и достаточными правами. Не стоит использовать права суперпользователя (Создал terraformeditor)
 
 <img width="1002" height="363" alt="image" src="https://github.com/user-attachments/assets/216a54da-53d9-476b-8357-21ee587a2881" />
 
@@ -103,7 +103,8 @@ commands will detect it and remind you to do so if necessary.
    а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
    https://github.com/olegveselov1984/devops-diplom-yandexcloud-nginx-.git
 
-<img width="834" height="316" alt="image" src="https://github.com/user-attachments/assets/73e16ac5-a7e0-45dd-aec3-4ada122d4b46" />
+<img width="825" height="409" alt="image" src="https://github.com/user-attachments/assets/95e6cbd4-3ad6-43f6-9ed7-765caf9bbf51" />
+
 
 ```
 events {
@@ -135,15 +136,104 @@ http {
    
 ```
 FROM nginx:1.21.6-alpine
-
 # Configuration
-ADD conf /etc/nginx
+ADD nginx.conf /etc/nginx.conf
 # Content
-ADD content /var/www/html/
-
-RUN chown -R nginx:nginx /var/www &&\
-    chmod -R 644 /var/www/html/*
+COPY index.html /usr/share/nginx/html
 ```
+
+Проверяем локально:
+
+```
+/devops-diplom-yandexcloud/devops-diplom-yandexcloud-nginx-$ docker build -t olegveselov1984/diplom:0.0.1 .
+[+] Building 1.7s (9/9) FINISHED                                                                                                                docker:default
+ => [internal] load build definition from Dockerfile                                                                                                      0.0s
+ => => transferring dockerfile: 159B                                                                                                                      0.0s
+ => [internal] load metadata for docker.io/library/nginx:1.21.6-alpine                                                                                    1.5s
+ => [auth] library/nginx:pull token for registry-1.docker.io                                                                                              0.0s
+ => [internal] load .dockerignore                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                           0.0s
+ => [1/3] FROM docker.io/library/nginx:1.21.6-alpine@sha256:a74534e76ee1121d418fa7394ca930eb67440deda413848bc67c68138535b989                              0.0s
+ => [internal] load build context                                                                                                                         0.0s
+ => => transferring context: 61B                                                                                                                          0.0s
+ => CACHED [2/3] ADD nginx.conf /etc/nginx.conf                                                                                                           0.0s
+ => CACHED [3/3] COPY index.html /usr/share/nginx/html                                                                                                    0.0s
+ => exporting to image                                                                                                                                    0.0s
+ => => exporting layers                                                                                                                                   0.0s
+ => => writing image sha256:9200a171013d19b0c55d7a6cb6575a366489981916ecebd3f342c1dac41a99c0                                                              0.0s
+ => => naming to docker.io/olegveselov1984/diplom:0.0.1                                                                                                   0.0s
+ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
+/devops-diplom-yandexcloud/devops-diplom-yandexcloud-nginx-$ docker run --network host olegveselov1984/diplom:0.0.1
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2025/12/22 11:30:57 [notice] 1#1: using the "epoll" event method
+2025/12/22 11:30:57 [notice] 1#1: nginx/1.21.6
+2025/12/22 11:30:57 [notice] 1#1: built by gcc 10.3.1 20211027 (Alpine 10.3.1_git20211027) 
+2025/12/22 11:30:57 [notice] 1#1: OS: Linux 6.8.0-90-generic
+2025/12/22 11:30:57 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/12/22 11:30:57 [notice] 1#1: start worker processes
+2025/12/22 11:30:57 [notice] 1#1: start worker process 32
+2025/12/22 11:30:57 [notice] 1#1: start worker process 33
+2025/12/22 11:30:57 [notice] 1#1: start worker process 34
+2025/12/22 11:30:57 [notice] 1#1: start worker process 35
+127.0.0.1 - - [22/Dec/2025:11:31:05 +0000] "GET / HTTP/1.1" 200 45 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0" "-"
+```
+
+
+```
+/devops-diplom-yandexcloud$ docker image ls
+REPOSITORY                              TAG          IMAGE ID       CREATED          SIZE
+olegveselov1984/diplom                  0.0.1        9200a171013d   13 minutes ago   23.4MB
+```
+
+
+<img width="480" height="162" alt="image" src="https://github.com/user-attachments/assets/75efa123-c6f5-4513-9de4-b9d9303ef3bb" />
+
+
+Отправляем docker image в DockerHub:
+Логинемся
+```
+/devops-diplom-yandexcloud$ docker login
+
+USING WEB-BASED LOGIN
+
+i Info → To sign in with credentials on the command line, use 'docker login -u <username>'
+         
+
+Your one-time device confirmation code is: TVKS-QRVR
+Press ENTER to open your browser or submit your device code here: https://login.docker.com/activate
+
+Waiting for authentication in the browser…
+
+
+WARNING! Your credentials are stored unencrypted in '/home/ubuntu/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+Login Succeeded
+```
+
+Отправляем:
+```
+/devops-diplom-yandexcloud$ docker push olegveselov1984/diplom:0.0.1
+The push refers to repository [docker.io/olegveselov1984/diplom]
+970b60ca3d01: Pushed 
+0d65d2f3bf38: Pushed 
+c0e7c94aefd8: Pushed 
+d6dd885da0bb: Pushed 
+a43749efe4ec: Pushed 
+45b275e8a06d: Pushed 
+4721bfafc708: Pushed 
+4fc242d58285: Pushed 
+0.0.1: digest: sha256:9a0b8513f9e12062962bc689855fb3416999d66566e1a985ac3e5889bd73ae92 size: 1982
+```
+
 
 Ожидаемый результат:
 
