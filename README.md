@@ -541,7 +541,27 @@ This is upgrade: false
 <img width="724" height="300" alt="image" src="https://github.com/user-attachments/assets/74d96909-7496-4c29-a3fb-d4073e3ec5b2" />
 
 
+Проверяем успешность:
 
+```
+/devops-diplom-yandexcloud/helm$ helm list  
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+web     default         1               2025-12-23 22:48:13.150357661 -0800 PST deployed        web-0.0.1       0.0.1  
+```
+<img width="1070" height="75" alt="image" src="https://github.com/user-attachments/assets/acbf3172-044d-407f-97e7-737d60e4dd68" />
+
+Проверяем доступность, сначала смотрим ip адрес нод:
+```
+/devops-diplom-yandexcloud/helm$ kubectl get nodes -o wide
+NAME                        STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP       OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+cl14sbv0g07mk451iaj5-epid   Ready    <none>   42h   v1.32.1   192.168.10.22   178.154.229.133   Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-ilyv   Ready    <none>   44h   v1.32.1   192.168.10.12   158.160.126.98    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-uqob   Ready    <none>   44h   v1.32.1   192.168.10.27   178.154.230.178   Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-uwex   Ready    <none>   44h   v1.32.1   192.168.10.24   158.160.106.30    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-ylev   Ready    <none>   42h   v1.32.1   192.168.10.4    178.154.231.51    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+```
+И подключаемся по любому внешниму ip адресу на порт 30000 (указан в файле deploy-web.yam {NodePort})
+<img width="879" height="259" alt="image" src="https://github.com/user-attachments/assets/087e6a3b-611d-4540-b323-089544b59739" />
 
 
 
