@@ -424,6 +424,9 @@ sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})/sum(kube_pod_status_
 <img width="2297" height="1282" alt="image" src="https://github.com/user-attachments/assets/658c9eb2-6404-4322-b3b5-07587e252b9b" />
 
 
+Там же доступно множество дефолтных шаблонов для Kubernetes
+
+<img width="820" height="1159" alt="image" src="https://github.com/user-attachments/assets/76bd9c2f-2c37-4fe0-b661-3ff77317980c" />
 
 
 
