@@ -362,22 +362,28 @@ prometheus-operator-cfcd59856-f8fzl   2/2     Running   0          4m27s
 Доступ к развернутым в кластере приложениям мониторинга настроим через проброс портов.
 
 Когда все ресурсы запустились, можно выполнить проброску портов кластера в локальное окружение с помощью команды kubectl port-forward:
+
 ```
 kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
 ```
+
 <img width="564" height="466" alt="image" src="https://github.com/user-attachments/assets/54cff2a2-20e8-4132-b34b-d3a2b9425a28" />
+
 ```
 kubectl --namespace monitoring port-forward svc/grafana 3000
 ```
+
 <img width="574" height="670" alt="image" src="https://github.com/user-attachments/assets/1c6f6bd1-bc52-4956-8f24-f5ad296b1757" />
 
 ```
 kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 ```
+
 <img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
 
 
 Деплой тестового приложенячерез helm
+
 ```
 /devops-diplom-yandexcloud/helm$ helm create web
 Creating web
