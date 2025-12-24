@@ -394,7 +394,7 @@ Creating web
 Редактируем файлы конфигурации:
 
 _helpers.tpl
-Добавляем  
+Добавляем:  
 ```
 {{/*
 Returns name of applied namespace.
@@ -411,27 +411,27 @@ Returns frontend port number.
 {{- end }}
 ```  
 
-deploy-web.yaml  
+Редактируем deploy-web.yaml  
 ```
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app
+  name: web
   namespace: {{ include "ns" . }}
   labels:
-    app: web-app
+    app: web
     component: frontend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: web-app
+      app: web
       component: frontend
   template:
     metadata:
       labels:
-        app: web-app
+        app: web
         component: frontend
     spec:
       containers:
@@ -449,12 +449,12 @@ metadata:
   name: frontend-nodeport-svc
   namespace: {{ include "ns" . }}
   labels:
-    app: web-app
+    app: web
     component: frontend
 spec:
   type: NodePort
   selector:
-    app: web-app
+    app: web
     component: frontend
   ports:
   - name: frontend-nodeport
@@ -463,7 +463,7 @@ spec:
     port: 80 # Port to apply from inside (to see ips - 'kubectl get svc').
     targetPort: frontend-port # Port to map acces to (to see ips - 'kubectl get pods -o wide')
 ```
-Chart.yaml  
+Редактируем  Chart.yaml  
 ```
 apiVersion: v2
 name: web
@@ -491,15 +491,54 @@ version: 0.0.1
 appVersion: "0.0.1"
 
 ```
-values.yaml  
+Редактируем  values.yaml  
 ```
 image:
   repository: olegveselov1984/diplom
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.1"
+```   
+Редактируем  NOTES.txt   
+```
+Welcome to "{{ .Release.Name }}" ({{ .Chart.Description }}) version "{{ .Chart.AppVersion }}" for namespace "{{ .Release.Namespace }}",
+for current namespace "{{ .Values.currentNamespace }}",
+proudly build from repository "{{ .Values.image.repository }}".
+
+Release revision: {{ .Release.Revision }}
+
+This is installation: {{ .Release.IsInstall }}
+This is upgrade: {{ .Release.IsUpgrade }}
 ```
 
+Остальные файлы удаляем:
+
+<img width="559" height="182" alt="image" src="https://github.com/user-attachments/assets/d94d1675-3878-4cc7-bb56-db4455fe86cc" />
+
+
+
+
+
+Разворачиваем приложение в кластере Kubernetes:
+```
+/devops-diplom-yandexcloud/helm$ helm install web web
+NAME: web
+LAST DEPLOYED: Tue Dec 23 22:48:13 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Welcome to "web" (A Helm chart for Kubernetes) version "0.0.1" for namespace "default",
+for current namespace "",
+proudly build from repository "olegveselov1984/diplom".
+
+Release revision: 1
+
+This is installation: true
+This is upgrade: false
+```  
+<img width="724" height="300" alt="image" src="https://github.com/user-attachments/assets/74d96909-7496-4c29-a3fb-d4073e3ec5b2" />
 
 
 
