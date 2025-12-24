@@ -388,6 +388,54 @@ kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 <img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
 
 
+
+Настройка системы мониторинга кластера Kubernetes:
+Добавляем основные метрики в prometheus   
+```
+kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
+```
+PromQL-запрос для получения общего количества подов в кластере:   
+```
+sum(kube_pod_status_phase{phase="Running"})
+```   
+Доля работающих подов:   
+```
+sum(kube_pod_status_phase{phase="Running"})/sum(kube_pod_status_phase)*100
+```   
+Общее количество подов веб-приложения:   
+```
+sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})
+```   
+Доля работающих подов веб-приложения:   
+```
+sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})/sum(kube_pod_status_phase {pod=~"web-.+"})*100
+```
+
+<img width="2239" height="1011" alt="image" src="https://github.com/user-attachments/assets/4b0d80d1-235d-4a8c-8789-4f5012700979" />
+
+Добавляем те же метрики в grafana  
+дефолтный логин\пароль admin\admin
+
+
+
+<img width="556" height="593" alt="image" src="https://github.com/user-attachments/assets/176ae358-079b-4d7f-a4f0-c7f272703916" />
+
+
+<img width="2297" height="1282" alt="image" src="https://github.com/user-attachments/assets/658c9eb2-6404-4322-b3b5-07587e252b9b" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Деплой тестового приложеня через helm
 
 ```
