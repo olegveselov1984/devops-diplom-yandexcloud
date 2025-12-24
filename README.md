@@ -197,7 +197,9 @@ olegveselov1984/diplom                  0.0.1        9200a171013d   13 minutes a
 
 
 Отправляем docker image в DockerHub:
+
 Логинемся
+
 ```
 /devops-diplom-yandexcloud$ docker login
 
@@ -240,6 +242,9 @@ a43749efe4ec: Pushed
 1. Git репозиторий с тестовым приложением и Dockerfile.
 
 <img width="711" height="406" alt="image" src="https://github.com/user-attachments/assets/bbf8128d-1775-4ed7-8de2-7ad4ccc1468a" />
+
+<img width="1444" height="989" alt="image" src="https://github.com/user-attachments/assets/b33ee396-d387-474c-be4c-66d273659482" />
+
 
 
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
