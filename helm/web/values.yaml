@@ -2,4 +2,4 @@ image:
   repository: olegveselov1984/diplom
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.1"
+  tag: "version-1.0.1"
