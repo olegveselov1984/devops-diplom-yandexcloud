@@ -246,7 +246,7 @@ a43749efe4ec: Pushed
 
 <img width="1444" height="989" alt="image" src="https://github.com/user-attachments/assets/b33ee396-d387-474c-be4c-66d273659482" />
 
-
+https://hub.docker.com/repository/docker/olegveselov1984/diplom/general
 
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
