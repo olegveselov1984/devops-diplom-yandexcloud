@@ -382,16 +382,123 @@ kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 <img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
 
 
-Деплой тестового приложенячерез helm
+Деплой тестового приложеня через helm
 
 ```
 /devops-diplom-yandexcloud/helm$ helm create web
 Creating web
 ```
 
+<img width="455" height="52" alt="image" src="https://github.com/user-attachments/assets/6c2e599c-e06d-4a37-a347-21b2d674cbfa" />
 
+Редактируем файлы конфигурации:
 
+_helpers.tpl
+Добавляем  
+```
+{{/*
+Returns name of applied namespace.
+*/}}
+{{- define "ns" -}}
+{{- default .Release.Namespace .Values.currentNamespace }}
+{{- end }}
 
+{{/*
+Returns frontend port number.
+*/}}
+{{- define "frontend-port" -}}
+{{- "30000" }}
+{{- end }}
+```  
+
+deploy-web.yaml  
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  namespace: {{ include "ns" . }}
+  labels:
+    app: web-app
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-app
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: web-app
+        component: frontend
+    spec:
+      containers:
+      - name: diplom
+        image: "{{- .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        ports:
+        - name: frontend-port
+          containerPort: 80
+          protocol: TCP
+---
+# NodePort: Exposes the Service on each Node's IP at a static port.
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-nodeport-svc
+  namespace: {{ include "ns" . }}
+  labels:
+    app: web-app
+    component: frontend
+spec:
+  type: NodePort
+  selector:
+    app: web-app
+    component: frontend
+  ports:
+  - name: frontend-nodeport
+    protocol: TCP
+    nodePort: {{ include "frontend-port" . }} # Port to apply from outside (to see ips - 'kubectl get nodes -o wide').
+    port: 80 # Port to apply from inside (to see ips - 'kubectl get svc').
+    targetPort: frontend-port # Port to map acces to (to see ips - 'kubectl get pods -o wide')
+```
+Chart.yaml  
+```
+apiVersion: v2
+name: web
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "0.0.1"
+
+```
+values.yaml  
+```
+image:
+  repository: olegveselov1984/diplom
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.0.1"
+```
 
 
 
