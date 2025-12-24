@@ -377,6 +377,47 @@ kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 <img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
 
 
+Деплой тестового приложенячерез helm
+```
+/devops-diplom-yandexcloud/helm$ helm create web
+Creating web
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Деплой инфраструктуры в terraform pipeline
 
