@@ -241,7 +241,8 @@ a43749efe4ec: Pushed
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
 
-<img width="711" height="406" alt="image" src="https://github.com/user-attachments/assets/bbf8128d-1775-4ed7-8de2-7ad4ccc1468a" />
+<img width="1547" height="502" alt="image" src="https://github.com/user-attachments/assets/bc16422b-adec-4004-9c48-92cc274de180" />
+
 
 <img width="1444" height="989" alt="image" src="https://github.com/user-attachments/assets/b33ee396-d387-474c-be4c-66d273659482" />
 
