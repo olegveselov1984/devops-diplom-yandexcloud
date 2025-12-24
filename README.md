@@ -624,13 +624,51 @@ cl14sbv0g07mk451iaj5-ylev   Ready    <none>   42h   v1.32.1   192.168.10.4    17
 
 
 
+Установка и настройка CI/CD  
 
+Для автоматической сборки docker image и деплоя приложения при изменении кода буду использовать Github actions  
 
+Для работы в github action требуются некоторые учетные данные. Поэтому создаем в Dockerhub секретный токен.  
 
+<img width="772" height="520" alt="image" src="https://github.com/user-attachments/assets/43d1fac3-9182-4536-a0fb-d2bdfc213592" />  
 
+Затем создадим в Github секреты для доступа к DockerHub  
 
+<img width="1831" height="975" alt="image" src="https://github.com/user-attachments/assets/78729992-6c5f-4c1e-8afc-d815119db706" />  
 
+Рабочие процессы GitHub Actions определяем в файлах YAML в .github/workflows каталоге репозитория с тестовым приложением   
 
+Создадим два workflow:
+
+1) Для сборки и отправки в регистр Docker образа при любом коммите в репозитории с тестовым приложением
+Отправка коммита   
+```
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ git add .
+ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ git commit -m 'version-1.0.1'
+[main 4ca69b0] version-1.0.1
+ 7 files changed, 162 insertions(+), 4 deletions(-)
+ create mode 100644 .github/Dockerfile
+ create mode 100644 .github/workflows/ci_cd_deployment.yaml
+ create mode 100644 .github/workflows/ci_deployment.yaml
+ rename nginx.conf => conf/nginx.conf (99%)
+ rename index.html => data/index.html (82%)
+ create mode 100644 deployment.yaml
+ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ git push origin
+Enumerating objects: 14, done.
+Counting objects: 100% (14/14), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (12/12), 2.12 KiB | 543.00 KiB/s, done.
+Total 12 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 1 local object.
+To https://github.com/olegveselov1984/devops-diplom-yandexcloud-nginx-.git
+   c5f1dbf..4ca69b0  main -> main
+ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ 
+```
+<img width="904" height="403" alt="image" src="https://github.com/user-attachments/assets/e9fcc6ca-d475-4be4-9a35-f410eb8b0ec6" />
 
 
 
