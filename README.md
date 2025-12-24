@@ -197,7 +197,9 @@ olegveselov1984/diplom                  0.0.1        9200a171013d   13 minutes a
 
 
 Отправляем docker image в DockerHub:
+
 Логинемся
+
 ```
 /devops-diplom-yandexcloud$ docker login
 
@@ -239,8 +241,12 @@ a43749efe4ec: Pushed
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
 
-<img width="711" height="406" alt="image" src="https://github.com/user-attachments/assets/bbf8128d-1775-4ed7-8de2-7ad4ccc1468a" />
+<img width="1547" height="502" alt="image" src="https://github.com/user-attachments/assets/bc16422b-adec-4004-9c48-92cc274de180" />
 
+
+<img width="1444" height="989" alt="image" src="https://github.com/user-attachments/assets/b33ee396-d387-474c-be4c-66d273659482" />
+
+https://hub.docker.com/repository/docker/olegveselov1984/diplom/general
 
 2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
@@ -362,19 +368,283 @@ prometheus-operator-cfcd59856-f8fzl   2/2     Running   0          4m27s
 Доступ к развернутым в кластере приложениям мониторинга настроим через проброс портов.
 
 Когда все ресурсы запустились, можно выполнить проброску портов кластера в локальное окружение с помощью команды kubectl port-forward:
+
 ```
 kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
 ```
+
 <img width="564" height="466" alt="image" src="https://github.com/user-attachments/assets/54cff2a2-20e8-4132-b34b-d3a2b9425a28" />
+
 ```
 kubectl --namespace monitoring port-forward svc/grafana 3000
 ```
+
 <img width="574" height="670" alt="image" src="https://github.com/user-attachments/assets/1c6f6bd1-bc52-4956-8f24-f5ad296b1757" />
 
 ```
 kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 ```
+
 <img width="958" height="516" alt="image" src="https://github.com/user-attachments/assets/930f9a4a-9bc5-4dfa-a22a-ac6832dda06f" />
+
+
+
+Настройка системы мониторинга кластера Kubernetes:
+Добавляем основные метрики в prometheus   
+```
+kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
+```
+PromQL-запрос для получения общего количества подов в кластере:   
+```
+sum(kube_pod_status_phase{phase="Running"})
+```   
+Доля работающих подов:   
+```
+sum(kube_pod_status_phase{phase="Running"})/sum(kube_pod_status_phase)*100
+```   
+Общее количество подов веб-приложения:   
+```
+sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})
+```   
+Доля работающих подов веб-приложения:   
+```
+sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})/sum(kube_pod_status_phase {pod=~"web-.+"})*100
+```
+
+<img width="2239" height="1011" alt="image" src="https://github.com/user-attachments/assets/4b0d80d1-235d-4a8c-8789-4f5012700979" />
+
+Добавляем те же метрики в grafana  
+дефолтный логин\пароль admin\admin
+
+
+
+<img width="556" height="593" alt="image" src="https://github.com/user-attachments/assets/176ae358-079b-4d7f-a4f0-c7f272703916" />
+
+
+<img width="2297" height="1282" alt="image" src="https://github.com/user-attachments/assets/658c9eb2-6404-4322-b3b5-07587e252b9b" />
+
+
+Там же доступно множество дефолтных шаблонов для Kubernetes
+
+<img width="820" height="1159" alt="image" src="https://github.com/user-attachments/assets/76bd9c2f-2c37-4fe0-b661-3ff77317980c" />
+
+
+
+
+
+
+
+
+
+
+
+
+Деплой тестового приложеня через helm
+
+```
+/devops-diplom-yandexcloud/helm$ helm create web
+Creating web
+```
+
+<img width="455" height="52" alt="image" src="https://github.com/user-attachments/assets/6c2e599c-e06d-4a37-a347-21b2d674cbfa" />
+
+Редактируем файлы конфигурации:
+
+_helpers.tpl
+Добавляем:  
+```
+{{/*
+Returns name of applied namespace.
+*/}}
+{{- define "ns" -}}
+{{- default .Release.Namespace .Values.currentNamespace }}
+{{- end }}
+
+{{/*
+Returns frontend port number.
+*/}}
+{{- define "frontend-port" -}}
+{{- "30000" }}
+{{- end }}
+```  
+
+Редактируем deploy-web.yaml  
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: {{ include "ns" . }}
+  labels:
+    app: web
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: web
+        component: frontend
+    spec:
+      containers:
+      - name: diplom
+        image: "{{- .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        ports:
+        - name: frontend-port
+          containerPort: 80
+          protocol: TCP
+---
+# NodePort: Exposes the Service on each Node's IP at a static port.
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-nodeport-svc
+  namespace: {{ include "ns" . }}
+  labels:
+    app: web
+    component: frontend
+spec:
+  type: NodePort
+  selector:
+    app: web
+    component: frontend
+  ports:
+  - name: frontend-nodeport
+    protocol: TCP
+    nodePort: {{ include "frontend-port" . }} # Port to apply from outside (to see ips - 'kubectl get nodes -o wide').
+    port: 80 # Port to apply from inside (to see ips - 'kubectl get svc').
+    targetPort: frontend-port # Port to map acces to (to see ips - 'kubectl get pods -o wide')
+```
+Редактируем  Chart.yaml  
+```
+apiVersion: v2
+name: web
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "0.0.1"
+
+```
+Редактируем  values.yaml  
+```
+image:
+  repository: olegveselov1984/diplom
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.0.1"
+```   
+Редактируем  NOTES.txt   
+```
+Welcome to "{{ .Release.Name }}" ({{ .Chart.Description }}) version "{{ .Chart.AppVersion }}" for namespace "{{ .Release.Namespace }}",
+for current namespace "{{ .Values.currentNamespace }}",
+proudly build from repository "{{ .Values.image.repository }}".
+
+Release revision: {{ .Release.Revision }}
+
+This is installation: {{ .Release.IsInstall }}
+This is upgrade: {{ .Release.IsUpgrade }}
+```
+
+Остальные файлы удаляем:
+
+<img width="559" height="182" alt="image" src="https://github.com/user-attachments/assets/d94d1675-3878-4cc7-bb56-db4455fe86cc" />
+
+
+
+
+
+Разворачиваем приложение в кластере Kubernetes:
+```
+/devops-diplom-yandexcloud/helm$ helm install web web
+NAME: web
+LAST DEPLOYED: Tue Dec 23 22:48:13 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Welcome to "web" (A Helm chart for Kubernetes) version "0.0.1" for namespace "default",
+for current namespace "",
+proudly build from repository "olegveselov1984/diplom".
+
+Release revision: 1
+
+This is installation: true
+This is upgrade: false
+```  
+<img width="724" height="300" alt="image" src="https://github.com/user-attachments/assets/74d96909-7496-4c29-a3fb-d4073e3ec5b2" />
+
+
+Проверяем успешность:
+
+```
+/devops-diplom-yandexcloud/helm$ helm list  
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+web     default         1               2025-12-23 22:48:13.150357661 -0800 PST deployed        web-0.0.1       0.0.1  
+```
+<img width="1070" height="75" alt="image" src="https://github.com/user-attachments/assets/acbf3172-044d-407f-97e7-737d60e4dd68" />
+
+Проверяем доступность, сначала смотрим ip адрес нод:
+```
+/devops-diplom-yandexcloud/helm$ kubectl get nodes -o wide
+NAME                        STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP       OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+cl14sbv0g07mk451iaj5-epid   Ready    <none>   42h   v1.32.1   192.168.10.22   178.154.229.133   Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-ilyv   Ready    <none>   44h   v1.32.1   192.168.10.12   158.160.126.98    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-uqob   Ready    <none>   44h   v1.32.1   192.168.10.27   178.154.230.178   Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-uwex   Ready    <none>   44h   v1.32.1   192.168.10.24   158.160.106.30    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+cl14sbv0g07mk451iaj5-ylev   Ready    <none>   42h   v1.32.1   192.168.10.4    178.154.231.51    Ubuntu 22.04.5 LTS   5.15.0-161-generic   containerd://1.7.27
+```
+И подключаемся по любому внешниму ip адресу на порт 30000 (указан в файле deploy-web.yam {NodePort})
+<img width="879" height="259" alt="image" src="https://github.com/user-attachments/assets/087e6a3b-611d-4540-b323-089544b59739" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
