@@ -439,6 +439,11 @@ sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})/sum(kube_pod_status_
 
 
 
+
+
+
+
+
 Деплой тестового приложеня через helm
 
 ```
@@ -638,9 +643,9 @@ cl14sbv0g07mk451iaj5-ylev   Ready    <none>   42h   v1.32.1   192.168.10.4    17
 
 Рабочие процессы GitHub Actions определяем в файлах YAML в .github/workflows каталоге репозитория с тестовым приложением   
 
-Создадим два workflow:
+Создадим workflow:
 
-1) Для сборки и отправки в регистр Docker образа при любом коммите в репозитории с тестовым приложением
+Для сборки и отправки в регистр Docker образа при любом коммите в репозитории с тестовым приложением
 Отправка коммита   
 ```
 /devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ git add .
@@ -670,58 +675,23 @@ ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
 ```
 <img width="904" height="403" alt="image" src="https://github.com/user-attachments/assets/e9fcc6ca-d475-4be4-9a35-f410eb8b0ec6" />
 
+Сборка образа и отправка в DockerHub
+
+<img width="2109" height="472" alt="image" src="https://github.com/user-attachments/assets/21e7e752-affe-464f-b3b1-74c3aa070af5" />
+
+<img width="1524" height="787" alt="image" src="https://github.com/user-attachments/assets/82b42037-46d5-44af-9268-b78db55ff248" />
+
+<img width="1533" height="739" alt="image" src="https://github.com/user-attachments/assets/ce6623b4-1271-4f1c-9137-cbe3d02cbafb" />
+
+При попаытке автоматизировать установку страници сталкнулся с ошибкой:
+
+<img width="2137" height="654" alt="image" src="https://github.com/user-attachments/assets/71cf9de3-af56-4f44-937c-1772e1b09036" />
+
+Переписал конфиг и добавил флаг --validate=false
+
+Ошибка изменилась:
+<img width="2025" height="855" alt="image" src="https://github.com/user-attachments/assets/43114c0b-f54b-4aad-b70a-165b21e52b60" />
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Деплой инфраструктуры в terraform pipeline
-
-1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
-
-Ожидаемый результат:
-1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
-2. Http доступ на 80 порту к web интерфейсу grafana.
-3. Дашборды в grafana отображающие состояние Kubernetes кластера.
-4. Http доступ на 80 порту к тестовому приложению.
-5. Atlantis или terraform cloud или ci/cd-terraform
----
-### Установка и настройка CI/CD
-
-Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
-
-Цель:
-
-1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
-2. Автоматический деплой нового docker образа.
-
-Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
-
-Ожидаемый результат:
-
-1. Интерфейс ci/cd сервиса доступен по http.
-2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
-3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистри, а также деплой соответствующего Docker образа в кластер Kubernetes.
-
----
-## Что необходимо для сдачи задания?
-
-1. Репозиторий с конфигурационными файлами Terraform и готовность продемонстрировать создание всех ресурсов с нуля.
-2. Пример pull request с комментариями созданными atlantis'ом или снимки экрана из Terraform Cloud или вашего CI-CD-terraform pipeline.
-3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible.
-4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image.
-5. Репозиторий с конфигурацией Kubernetes кластера.
-6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
-7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
+Прошу помочь с решением проблемы, или засчитать работу в текущем виде.
 
