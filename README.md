@@ -439,6 +439,11 @@ sum(kube_pod_status_phase {phase="Running", pod=~"web-.+"})/sum(kube_pod_status_
 
 
 
+
+
+
+
+
 Деплой тестового приложеня через helm
 
 ```
@@ -670,8 +675,57 @@ ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
 ```
 <img width="904" height="403" alt="image" src="https://github.com/user-attachments/assets/e9fcc6ca-d475-4be4-9a35-f410eb8b0ec6" />
 
+Сборка образа и отправка в DockerHub
+
+<img width="2109" height="472" alt="image" src="https://github.com/user-attachments/assets/21e7e752-affe-464f-b3b1-74c3aa070af5" />
+
+<img width="1524" height="787" alt="image" src="https://github.com/user-attachments/assets/82b42037-46d5-44af-9268-b78db55ff248" />
+
+<img width="1533" height="739" alt="image" src="https://github.com/user-attachments/assets/ce6623b4-1271-4f1c-9137-cbe3d02cbafb" />
 
 
+
+2) Для сборки и отправки с соответствующим label в регистри, а также деплоя соответствующего Docker образа
+в кластер Kubernetes при создании тега (например, v1.0.3)
+
+
+
+Собираем образ с новой версией:
+```
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ docker build -t olegveselov1984/diplom:version-1.0.1 .
+[+] Building 2.3s (9/9) FINISHED                                                                                                                                    docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                          0.1s
+ => => transferring dockerfile: 171B                                                                                                                                          0.0s
+ => [internal] load metadata for docker.io/library/nginx:1.21.6-alpine                                                                                                        1.6s
+ => [auth] library/nginx:pull token for registry-1.docker.io                                                                                                                  0.0s
+ => [internal] load .dockerignore                                                                                                                                             0.0s
+ => => transferring context: 2B                                                                                                                                               0.0s
+ => [internal] load build context                                                                                                                                             0.1s
+ => => transferring context: 507B                                                                                                                                             0.0s
+ => [1/3] FROM docker.io/library/nginx:1.21.6-alpine@sha256:a74534e76ee1121d418fa7394ca930eb67440deda413848bc67c68138535b989                                                  0.0s
+ => CACHED [2/3] ADD conf/nginx.conf /etc/nginx.conf                                                                                                                          0.0s
+ => CACHED [3/3] COPY data/index.html /usr/share/nginx/html                                                                                                                   0.0s
+ => exporting to image                                                                                                                                                        0.1s
+ => => exporting layers                                                                                                                                                       0.0s
+ => => writing image sha256:121f4e20c6d4457db973ef551d0c5e31cbf93a823f5bfcb271494f59f05934db                                                                                  0.0s
+ => => naming to docker.io/olegveselov1984/diplom:version-1.0.1                                                                                                               0.0s
+ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ 
+```
+Отправляем новый "docker image" в DockerHub
+```
+/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ docker push olegveselov1984/diplom:version-1.0.1
+The push refers to repository [docker.io/olegveselov1984/diplom]
+970b60ca3d01: Layer already exists 
+0d65d2f3bf38: Layer already exists 
+c0e7c94aefd8: Layer already exists 
+d6dd885da0bb: Layer already exists 
+a43749efe4ec: Layer already exists 
+45b275e8a06d: Layer already exists 
+4721bfafc708: Layer already exists 
+4fc242d58285: Layer already exists 
+version-1.0.1: digest: sha256:0111995d419586c94ef9684a55e427aec7f2daacd8d11627a4cdaf9831860709 size: 1982
+```
 
 
 
