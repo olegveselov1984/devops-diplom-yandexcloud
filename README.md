@@ -643,9 +643,9 @@ cl14sbv0g07mk451iaj5-ylev   Ready    <none>   42h   v1.32.1   192.168.10.4    17
 
 Рабочие процессы GitHub Actions определяем в файлах YAML в .github/workflows каталоге репозитория с тестовым приложением   
 
-Создадим два workflow:
+Создадим workflow:
 
-1) Для сборки и отправки в регистр Docker образа при любом коммите в репозитории с тестовым приложением
+Для сборки и отправки в регистр Docker образа при любом коммите в репозитории с тестовым приложением
 Отправка коммита   
 ```
 /devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ git add .
@@ -685,47 +685,6 @@ ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
 
 
 
-2) Для сборки и отправки с соответствующим label в регистри, а также деплоя соответствующего Docker образа
-в кластер Kubernetes при создании тега (например, v1.0.3)
-
-
-
-Собираем образ с новой версией:
-```
-/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ docker build -t olegveselov1984/diplom:version-1.0.1 .
-[+] Building 2.3s (9/9) FINISHED                                                                                                                                    docker:default
- => [internal] load build definition from Dockerfile                                                                                                                          0.1s
- => => transferring dockerfile: 171B                                                                                                                                          0.0s
- => [internal] load metadata for docker.io/library/nginx:1.21.6-alpine                                                                                                        1.6s
- => [auth] library/nginx:pull token for registry-1.docker.io                                                                                                                  0.0s
- => [internal] load .dockerignore                                                                                                                                             0.0s
- => => transferring context: 2B                                                                                                                                               0.0s
- => [internal] load build context                                                                                                                                             0.1s
- => => transferring context: 507B                                                                                                                                             0.0s
- => [1/3] FROM docker.io/library/nginx:1.21.6-alpine@sha256:a74534e76ee1121d418fa7394ca930eb67440deda413848bc67c68138535b989                                                  0.0s
- => CACHED [2/3] ADD conf/nginx.conf /etc/nginx.conf                                                                                                                          0.0s
- => CACHED [3/3] COPY data/index.html /usr/share/nginx/html                                                                                                                   0.0s
- => exporting to image                                                                                                                                                        0.1s
- => => exporting layers                                                                                                                                                       0.0s
- => => writing image sha256:121f4e20c6d4457db973ef551d0c5e31cbf93a823f5bfcb271494f59f05934db                                                                                  0.0s
- => => naming to docker.io/olegveselov1984/diplom:version-1.0.1                                                                                                               0.0s
-ubuntu@ubuntu:~/src/devops-diplom-yandexcloud
-/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ 
-```
-Отправляем новый "docker image" в DockerHub
-```
-/devops-diplom-yandexcloud-nginx-/devops-diplom-yandexcloud-nginx-$ docker push olegveselov1984/diplom:version-1.0.1
-The push refers to repository [docker.io/olegveselov1984/diplom]
-970b60ca3d01: Layer already exists 
-0d65d2f3bf38: Layer already exists 
-c0e7c94aefd8: Layer already exists 
-d6dd885da0bb: Layer already exists 
-a43749efe4ec: Layer already exists 
-45b275e8a06d: Layer already exists 
-4721bfafc708: Layer already exists 
-4fc242d58285: Layer already exists 
-version-1.0.1: digest: sha256:0111995d419586c94ef9684a55e427aec7f2daacd8d11627a4cdaf9831860709 size: 1982
-```
 
 
 
@@ -740,16 +699,6 @@ version-1.0.1: digest: sha256:0111995d419586c94ef9684a55e427aec7f2daacd8d11627a4
 
 
 
-### Деплой инфраструктуры в terraform pipeline
-
-1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
-
-Ожидаемый результат:
-1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
-2. Http доступ на 80 порту к web интерфейсу grafana.
-3. Дашборды в grafana отображающие состояние Kubernetes кластера.
-4. Http доступ на 80 порту к тестовому приложению.
-5. Atlantis или terraform cloud или ci/cd-terraform
 ---
 ### Установка и настройка CI/CD
 
